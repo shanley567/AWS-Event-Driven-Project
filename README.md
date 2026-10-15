@@ -1,3 +1,21 @@
+# Quick Access Links
+
+AWS & Terraform paths:
+
+```
+& "C:\Program Files\Amazon\AWSCLIV2\aws.exe"
+```
+
+```
+ & "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\Hashicorp.Terraform_Microsoft.Winget.Source_8wekyb3d8bbwe\terraform.exe"
+```
+
+View resources:
+
+```PowerShell
+  & "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\Hashicorp.Terraform_Microsoft.Winget.Source_8wekyb3d8bbwe\terraform.exe" state list
+```
+
 # AWS-Event-Driven-Project
 
 Project created to show:
@@ -37,15 +55,15 @@ Project created to show:
 
 ## How to use
 
-How to :
+How to test:
 
-Send Notification (where example message is the flight delay):
+Add message to SQS (where example message is the flight delay):
 
 ```PowerShell
-& "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sqs send-message `   
->>   --queue-url "https://sqs.eu-north-1.amazonaws.com/169676386235/flight-events" `
->>   --message-body "Flight BA123 delayed 45 minutes" `
->>   --region eu-north-1
+ & "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sqs send-message `
+--queue-url "https://sqs.eu-north-1.amazonaws.com/169676386235/flight-events" `
+--message-body "Flight BA123 delayed 1 hour(s)" `
+--region eu-north-1
 ```
 
 View notification:
@@ -54,6 +72,16 @@ View notification:
 & "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sqs receive-message `
   --queue-url "https://sqs.eu-north-1.amazonaws.com/169676386235/flight-events" `
   --region eu-north-1
+```
+
+SNS service:
+
+```PowerShell
+& "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sns publish `
+    --topic-arn "arn:aws:sns:eu-north-1:169676386235:flight-notifications" `
+    --message "This is a direct test from the CLI to SNS!" `
+    --subject "CLI Test" `
+    --region eu-north-1
 ```
 
 This can also be viewed in my email as it specifies `j.s***@outlook.com`in the `main.tf`file as the endpoint.
