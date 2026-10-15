@@ -4,5 +4,5 @@ output "account_id" {
 }
 
 output "region" {
-  value = data.aws_region.current.name
+  value = data.aws_region.current.region
 }
