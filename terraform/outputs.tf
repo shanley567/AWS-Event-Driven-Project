@@ -6,3 +6,8 @@ output "account_id" {
 output "region" {
   value = data.aws_region.current.region
 }
+
+# Adding the output for the SNS topic
+output "sns_topic_arn" {
+  value = aws_sns_topic.flight_notifications.arn
+}

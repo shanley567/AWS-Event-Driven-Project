@@ -3,3 +3,8 @@
 data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
+
+# Adding the SNS topic resource to the Terraform configuration
+resource "aws_sns_topic" "flight_notifications" {
+  name = "flight-notifications"
+}
