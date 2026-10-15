@@ -1,8 +1,6 @@
-
-
 # Quick Access Links
 
-AWS & Terraform:
+AWS & Terraform paths:
 
 ```
 & "C:\Program Files\Amazon\AWSCLIV2\aws.exe"
@@ -12,7 +10,11 @@ AWS & Terraform:
  & "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\Hashicorp.Terraform_Microsoft.Winget.Source_8wekyb3d8bbwe\terraform.exe"
 ```
 
+View resources:
 
+```PowerShell
+  & "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\Hashicorp.Terraform_Microsoft.Winget.Source_8wekyb3d8bbwe\terraform.exe" state list
+```
 
 # AWS-Event-Driven-Project
 
