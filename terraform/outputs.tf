@@ -11,3 +11,8 @@ output "region" {
 output "sns_topic_arn" {
   value = aws_sns_topic.flight_notifications.arn
 }
+
+# Adding the output for the SQS queue
+output "sqs_queue_url" {
+  value = aws_sqs_queue.flight_events.url
+}
