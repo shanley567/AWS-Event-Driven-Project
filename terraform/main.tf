@@ -8,3 +8,10 @@ data "aws_region" "current" {}
 resource "aws_sns_topic" "flight_notifications" {
   name = "flight-notifications"
 }
+
+# Adding the SNS topic subscription resource to the Terraform configuration
+resource "aws_sns_topic_subscription" "email_subscription" {
+  topic_arn = aws_sns_topic.flight_notifications.arn
+  protocol  = "email"
+  endpoint  = "j.shanley.pratt@outlook.com"
+}
