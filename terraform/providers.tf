@@ -1,3 +1,6 @@
+# This file is used to configure the AWS provider for Terraform. 
+# It specifies the required version of Terraform and the AWS provider, 
+# as well as the AWS region to be used for resource creation.
 terraform {
   required_version = ">= 1.5"
 
