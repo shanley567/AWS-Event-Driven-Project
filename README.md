@@ -248,14 +248,13 @@ Create a queue that buffers incoming work.
 
 Terraform Resources:
 
-Plain Text
-
+```Plain
 aws_sqs_queue
+```
 
 Workflow:
 
-Plain Text
-
+```Plain
 Event
 
   |
@@ -263,6 +262,7 @@ Event
   v
 
 SQS
+```
 
 Purpose:
 
@@ -274,11 +274,9 @@ Send a test message manually.
 
 Verify:
 
-Shell
-
+```Shell
 aws sqs receive-message
-
----
+```
 
 # Phase 5: Notification Lambda
 
@@ -288,16 +286,15 @@ Create Lambda #2.
 
 Function:
 
-Python
-
+```Python
 def handler(event, context):
 
     print(event)
+```
 
 Workflow:
 
-Plain Text
-
+```Plain
 SQS
 
  |
@@ -305,6 +302,7 @@ SQS
  v
 
 Lambda
+```
 
 Purpose:
 
@@ -312,11 +310,11 @@ Learn event-triggered compute.
 
 Terraform Resources:
 
-Plain Text
-
+```Plain
 aws_lambda_function
 
 aws_lambda_event_source_mapping
+```
 
 Deliverable:
 
@@ -332,8 +330,7 @@ Lambda publishes notifications.
 
 Workflow:
 
-Plain Text
-
+```Plain
 Lambda
 
   |
@@ -341,12 +338,13 @@ Lambda
   v
 
 SNS
+```
 
 Example email:
 
-Plain Text
-
+```Plain
 Flight BA123 delayed 45 minutes.
+```
 
 Deliverable:
 
@@ -606,4 +604,3 @@ Shows professional IaC practices.
 When completed you can confidently say:
 
 > I built a serverless event-driven airport operations system in AWS using Terraform. Flight events were published to EventBridge, processed by Lambda, passed asynchronously through SQS, and used to trigger notifications through SNS. I added CloudWatch monitoring and alarms to improve observability and used Infrastructure as Code throughout the project.
->
