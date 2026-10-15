@@ -15,3 +15,9 @@ resource "aws_sns_topic_subscription" "email_subscription" {
   protocol  = "email"
   endpoint  = "j.shanley.pratt@outlook.com"
 }
+
+# Adding the SQS queue resource to the Terraform configuration
+resource "aws_sqs_queue" "flight_events" {
+  name = "flight-events"
+}
+
