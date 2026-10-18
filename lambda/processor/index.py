@@ -2,56 +2,65 @@ import json
 import boto3
 import os
 
-# Initialize AWS clients outside the handler for connection reuse
 sns = boto3.client("sns")
 
-# Fail immediately if the variable is missing
 SNS_TOPIC_ARN = os.environ["SNS_TOPIC_ARN"]
 
 
 def handler(event, context):
-    """
-    Processes messages received from SQS and republishes
-    them to an SNS topic.
-    """
-
-    print(json.dumps({
-        "event": "lambda_invoked",
-        "records_received": len(event.get("Records", []))
-    }))
 
     for record in event["Records"]:
+
         try:
-            message_id = record["messageId"]
-            message_body = record["body"]
+            flight_event = json.loads(record["body"])
 
-            print(json.dumps({
-                "event": "processing_message",
-                "message_id": message_id,
-                "message_body": message_body
-            }))
+            flight_number = flight_event["flight_number"]
+            origin = flight_event["origin"]
+            destination = flight_event["destination"]
+            delay_minutes = flight_event["delay_minutes"]
 
-            sns.publish(
-                TopicArn=SNS_TOPIC_ARN,
-                Message=f"Flight Alert:\n{message_body}",
-                Subject="Flight Status Update"
+            print(
+                json.dumps(
+                    {
+                        "flight_number": flight_number,
+                        "delay_minutes": delay_minutes
+                    }
+                )
             )
 
-            print(json.dumps({
-                "event": "message_processed",
-                "message_id": message_id
-            }))
+            if delay_minutes >= 15:
+
+                sns.publish(
+                    TopicArn=SNS_TOPIC_ARN,
+                    Subject=f"Flight Delay Alert - {flight_number}",
+                    Message=f"""
+Flight: {flight_number}
+
+Origin: {origin}
+
+Destination: {destination}
+
+Delay: {delay_minutes} minutes
+"""
+                )
+
+            else:
+                print(
+                    f"Flight {flight_number} delay of {delay_minutes} minutes does not require notification"
+                )
 
         except Exception as e:
-            print(json.dumps({
-                "event": "processing_failed",
-                "message_id": record.get("messageId"),
-                "error": str(e)
-            }))
+
+            print(
+                json.dumps(
+                    {
+                        "error": str(e)
+                    }
+                )
+            )
 
             raise
 
     return {
-        "statusCode": 200,
-        "body": json.dumps("Success")
+        "statusCode": 200
     }
