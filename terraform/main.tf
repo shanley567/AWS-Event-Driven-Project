@@ -1,61 +1,92 @@
-# This file is used to configure the AWS provider for Terraform.
-
+# AWS Account Information
 data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-# Adding the SNS topic resource to the Terraform configuration
+# SNS Topic
 resource "aws_sns_topic" "flight_notifications" {
   name = "flight-notifications"
 }
 
-# Adding the SNS topic subscription resource to the Terraform configuration
+# Email Subscription
 resource "aws_sns_topic_subscription" "email_subscription" {
   topic_arn = aws_sns_topic.flight_notifications.arn
   protocol  = "email"
   endpoint  = "j.shanley.pratt@outlook.com"
 }
 
-# Adding the SQS queue resource to the Terraform configuration
+# SQS Queue
 resource "aws_sqs_queue" "flight_events" {
   name = "flight-events"
 }
 
-### LAMBDA FUNCTION SETUP ###
-# 1. IAM Role: The "Identity" the Lambda assumes
+##################################################
+# LAMBDA IAM ROLE
+##################################################
+
 resource "aws_iam_role" "lambda_role" {
   name = "flight_lambda_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = { Service = "lambda.amazonaws.com" }
-    }]
+
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
   })
 }
 
-# 2. Permissions: Allow Lambda to write logs and talk to SNS/SQS
+##################################################
+# CLOUDWATCH LOGGING PERMISSIONS
+##################################################
+
 resource "aws_iam_role_policy_attachment" "lambda_basic" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+##################################################
+# CUSTOM SNS + SQS POLICY
+##################################################
+
 resource "aws_iam_policy" "lambda_sns_sqs_policy" {
+
   name = "LambdaSNSSQSPolicy"
+
   policy = jsonencode({
     Version = "2012-10-17"
+
     Statement = [
       {
-        Action = ["sns:Publish"]
+        Action = [
+          "sns:Publish"
+        ]
+
         Effect = "Allow"
-        Resource = [aws_sns_topic.flight_notifications.arn]
+
+        Resource = [
+          aws_sns_topic.flight_notifications.arn
+        ]
       },
       {
-        Action = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]
+        Action = [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ]
+
         Effect = "Allow"
-        Resource = [aws_sqs_queue.flight_events.arn]
+
+        Resource = [
+          aws_sqs_queue.flight_events.arn
+        ]
       }
     ]
   })
@@ -66,23 +97,51 @@ resource "aws_iam_role_policy_attachment" "lambda_custom" {
   policy_arn = aws_iam_policy.lambda_sns_sqs_policy.arn
 }
 
-# 3. The Lambda Function itself
-resource "aws_lambda_function" "notifier" {
-  filename      = "../lambda/notifier/index.zip" # Make sure you zip the code!
-  function_name = "flight-notifier"
-  role          = aws_iam_role.lambda_role.arn
-  handler       = "index.handler"
-  runtime       = "python3.12"
+##################################################
+# PACKAGE LAMBDA CODE
+##################################################
+
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "../lambda/processor/index.py"
+  output_path = "../lambda/processor.zip"
+}
+
+##################################################
+# LAMBDA FUNCTION
+##################################################
+
+resource "aws_lambda_function" "processor" {
+
+  function_name = "flight-event-processor"
+
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+
+  role    = aws_iam_role.lambda_role.arn
+  handler = "index.handler"
+  runtime = "python3.13"
 
   environment {
     variables = {
       SNS_TOPIC_ARN = aws_sns_topic.flight_notifications.arn
     }
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_basic,
+    aws_iam_role_policy_attachment.lambda_custom
+  ]
 }
 
-# 4. The Trigger: This tells AWS "Whenever SQS gets a message, run this Lambda"
+##################################################
+# SQS -> LAMBDA TRIGGER
+##################################################
+
 resource "aws_lambda_event_source_mapping" "sqs_to_lambda" {
+
   event_source_arn = aws_sqs_queue.flight_events.arn
-  function_name    = aws_lambda_function.notifier.arn
+  function_name    = aws_lambda_function.processor.arn
+
+  batch_size = 1
 }
