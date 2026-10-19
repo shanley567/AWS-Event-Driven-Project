@@ -122,6 +122,9 @@ data "archive_file" "lambda_zip" {
 resource "aws_lambda_function" "processor" {
 
   function_name = "flight-event-processor"
+  tracing_config {
+    mode = "Active"
+  }
 
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
@@ -141,9 +144,6 @@ resource "aws_lambda_function" "processor" {
     aws_iam_role_policy_attachment.lambda_custom
   ]
 
-  tracing_config {
-  mode = "Active"
-}
 }
 
 ##################################################
