@@ -52,3 +52,9 @@ jobs:
 
       - name: Run TFLint
         run: tflint
+
+      # checkov security scanning for 
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform
