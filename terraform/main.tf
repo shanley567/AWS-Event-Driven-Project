@@ -6,6 +6,7 @@ data "aws_caller_identity" "current" {}
 # SNS Topic
 resource "aws_sns_topic" "flight_notifications" {
   name = "flight-notifications"
+  kms_master_key_id = "alias/aws/sns"
 }
 
 # Email Subscription
