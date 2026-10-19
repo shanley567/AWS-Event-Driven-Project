@@ -140,6 +140,10 @@ resource "aws_lambda_function" "processor" {
     aws_iam_role_policy_attachment.lambda_basic,
     aws_iam_role_policy_attachment.lambda_custom
   ]
+
+  tracing_config {
+  mode = "Active"
+}
 }
 
 ##################################################
