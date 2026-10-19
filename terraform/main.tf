@@ -1,7 +1,7 @@
 # AWS Account Information
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {}
+# data "aws_region" "current" {}
 
 # SNS Topic
 resource "aws_sns_topic" "flight_notifications" {
