@@ -2,3 +2,9 @@
 variable "project_name" {
   default = "flight-events"
 }
+
+variable "aws_region" {
+  description = "AWS deployment region"
+  type        = string
+  default     = "eu-north-1"
+}

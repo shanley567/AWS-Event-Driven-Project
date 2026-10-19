@@ -1,3 +1,58 @@
+# Quick Access Links
+
+View resources:
+
+```PowerShell
+  & "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\Hashicorp.Terraform_Microsoft.Winget.Source_8wekyb3d8bbwe\terraform.exe" state list
+```
+
+# How to use
+
+How to test:
+
+### SQS
+
+Add message to SQS (where example message is the flight delay):
+
+```PowerShell
+ & "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sqs send-message `
+--queue-url "https://sqs.eu-north-1.amazonaws.com/169676386235/flight-events" `
+--message-body "Flight BA123 delayed 1 hour(s)" `
+--region eu-north-1
+```
+
+View notification:
+
+```PowerShell
+& "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sqs receive-message `
+  --queue-url "https://sqs.eu-north-1.amazonaws.com/169676386235/flight-events" `
+  --region eu-north-1
+```
+
+### SNS service:
+
+```PowerShell
+& "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sns publish `
+    --topic-arn "arn:aws:sns:eu-north-1:169676386235:flight-notifications" `
+    --message "This is a direct test from the CLI to SNS!" `
+    --subject "CLI Test" `
+    --region eu-north-1
+```
+
+This can also be viewed in my email as it specifies `j.s***@outlook.com`in the `main.tf`file as the endpoint.
+
+## Dashboard
+
+The dashboard for the function can be seen showing:
+
+![1792414697636](image/README/1792414697636.png)
+
+- Lambda
+  - Errors
+  - Function Duration
+- SQS size
+- DLQ size
+
 # AWS-Event-Driven-Project
 
 Project created to show:
@@ -34,29 +89,6 @@ Project created to show:
 9. End to end testing
 10. Observability
 11. Enhancements
-
-## How to use
-
-How to :
-
-Send Notification (where example message is the flight delay):
-
-```PowerShell
-& "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sqs send-message `   
->>   --queue-url "https://sqs.eu-north-1.amazonaws.com/169676386235/flight-events" `
->>   --message-body "Flight BA123 delayed 45 minutes" `
->>   --region eu-north-1
-```
-
-View notification:
-
-```PowerShell
-& "C:\Program Files\Amazon\AWSCLIV2\aws.exe" sqs receive-message `
-  --queue-url "https://sqs.eu-north-1.amazonaws.com/169676386235/flight-events" `
-  --region eu-north-1
-```
-
-This can also be viewed in my email as it specifies `j.s***@outlook.com`in the `main.tf`file as the endpoint.
 
 Co-Pilot Setup:
 
