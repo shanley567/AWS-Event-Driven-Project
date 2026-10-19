@@ -17,7 +17,12 @@ def handler(event, context):
             flight_number = flight_event["flight_number"]
             origin = flight_event["origin"]
             destination = flight_event["destination"]
-            delay_minutes = flight_event["delay_minutes"]
+            try:
+                delay_minutes = int(flight_event["delay_minutes"])
+            except (ValueError, TypeError):
+                raise ValueError(
+                    f"Invalid delay_minutes value: {flight_event['delay_minutes']}"
+                )
 
             print(
                 json.dumps(

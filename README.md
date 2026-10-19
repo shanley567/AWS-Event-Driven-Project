@@ -41,6 +41,18 @@ View notification:
 
 This can also be viewed in my email as it specifies `j.s***@outlook.com`in the `main.tf`file as the endpoint.
 
+## Dashboard
+
+The dashboard for the function can be seen showing:
+
+![1792414697636](image/README/1792414697636.png)
+
+- Lambda
+  - Errors
+  - Function Duration
+- SQS size
+- DLQ size
+
 # AWS-Event-Driven-Project
 
 Project created to show:
