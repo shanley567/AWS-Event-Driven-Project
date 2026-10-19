@@ -18,6 +18,11 @@ resource "aws_sns_topic_subscription" "email_subscription" {
 # SQS Queue
 resource "aws_sqs_queue" "flight_events" {
   name = "flight-events"
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.flight_dlq.arn
+    maxReceiveCount     = 3
+  })
 }
 
 ##################################################
@@ -144,4 +149,9 @@ resource "aws_lambda_event_source_mapping" "sqs_to_lambda" {
   function_name    = aws_lambda_function.processor.arn
 
   batch_size = 1
+}
+
+# DLQ for failed messages in SQS
+resource "aws_sqs_queue" "flight_dlq" {
+  name = "flight-events-dlq"
 }
