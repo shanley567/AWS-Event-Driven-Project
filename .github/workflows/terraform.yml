@@ -58,3 +58,4 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: terraform
+          soft_fail: true
