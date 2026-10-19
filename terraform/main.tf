@@ -126,6 +126,8 @@ resource "aws_lambda_function" "processor" {
     mode = "Active"
   }
 
+  reserved_concurrent_executions = 5
+
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
