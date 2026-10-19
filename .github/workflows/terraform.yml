@@ -42,3 +42,13 @@ jobs:
       # This will be fixed in a future PR.
       # - name: Terraform Plan
       #   run: terraform plan -input=false
+
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Initialize TFLint
+        run: tflint --init
+
+      - name: Run TFLint
+        run: tflint
