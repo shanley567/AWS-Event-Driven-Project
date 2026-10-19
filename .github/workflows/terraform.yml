@@ -53,7 +53,7 @@ jobs:
       - name: Run TFLint
         run: tflint
 
-      # checkov security scanning for 
+      # checkov security scanning 
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@master
         with:
