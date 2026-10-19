@@ -5,7 +5,7 @@ data "aws_caller_identity" "current" {}
 
 # SNS Topic
 resource "aws_sns_topic" "flight_notifications" {
-  name = "flight-notifications"
+  name              = "flight-notifications"
   kms_master_key_id = "alias/aws/sns"
 }
 
@@ -156,6 +156,6 @@ resource "aws_lambda_event_source_mapping" "sqs_to_lambda" {
 
 # DLQ for failed messages in SQS
 resource "aws_sqs_queue" "flight_dlq" {
-  name = "flight-events-dlq"
-    sqs_managed_sse_enabled = true
+  name                    = "flight-events-dlq"
+  sqs_managed_sse_enabled = true
 }
