@@ -33,6 +33,12 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::548722508417:role/GitHubTerraformReadOnly
+          aws-region: eu-north-1
+
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
