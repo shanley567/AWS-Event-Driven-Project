@@ -40,9 +40,6 @@ jobs:
           echo "Repository: $GITHUB_REPOSITORY"
           echo "Event: $GITHUB_EVENT_NAME"
 
-      - name: Print GitHub OIDC Claims
-        uses: github/actions-oidc-debugger@main
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
