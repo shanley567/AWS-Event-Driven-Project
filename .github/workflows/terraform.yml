@@ -33,6 +33,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # Debugging GitHub context for troubleshooting, can be commented out when not needed
+      - name: Debug GitHub Context
+        run: |
+          echo "Ref: $GITHUB_REF"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Event: $GITHUB_EVENT_NAME"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
