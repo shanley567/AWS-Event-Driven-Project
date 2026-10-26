@@ -1,9 +1,5 @@
 name: Terraform CI
 
-permissions:
-  id-token: write
-  contents: read
-
 on:
   push:
     branches:
@@ -33,29 +29,6 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      # Debugging GitHub context for troubleshooting, can be commented out when not needed
-      - name: Debug GitHub Context
-        run: |
-          echo "Ref: $GITHUB_REF"
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Event: $GITHUB_EVENT_NAME"
-
-      # # Debugging OIDC Variables for troubleshooting, can be commented out when not needed
-      # - name: Check OIDC Variables
-      #   run: |
-      #     echo "ACTIONS_ID_TOKEN_REQUEST_URL=${ACTIONS_ID_TOKEN_REQUEST_URL}"
-      #     echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN exists=$([ -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ] && echo yes || echo no)"
-
-      # could not get to work, will come back to later
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     role-to-assume: arn:aws:iam::548722508417:role/GitHubOIDCTest
-      #     aws-region: eu-north-1
-
-      # - name: Verify AWS Identity
-      #   run: aws sts get-caller-identity
-
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
@@ -65,11 +38,20 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      # Need to comment out as the plan step is failing due to missing provider credentials. 
-      # This will be fixed in a future PR.
-      # - name: Terraform Plan
-      #   run: terraform plan -input=false
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
+      - name: Install Test Dependencies
+        run: |
+          python -m pip install -r lambda/processor/requirements-dev.txt
+        working-directory: .
+
+      - name: Run Pytest
+        run: |
+          pytest
+        working-directory: lambda/processor
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v4
@@ -80,7 +62,6 @@ jobs:
       - name: Run TFLint
         run: tflint
 
-      # checkov security scanning 
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@master
         with:
