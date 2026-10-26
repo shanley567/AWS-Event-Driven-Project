@@ -2,6 +2,8 @@ import json
 import boto3
 import os
 
+from validator import validate_event
+
 sns = boto3.client("sns")
 
 SNS_TOPIC_ARN = os.environ["SNS_TOPIC_ARN"]
@@ -9,24 +11,34 @@ SNS_TOPIC_ARN = os.environ["SNS_TOPIC_ARN"]
 
 def handler(event, context):
 
+    print(
+        json.dumps(
+            {
+                "event": "lambda_invoked",
+                "records_received": len(event["Records"])
+            }
+        )
+    )
+
     for record in event["Records"]:
 
         try:
+
             flight_event = json.loads(record["body"])
 
-            flight_number = flight_event["flight_number"]
-            origin = flight_event["origin"]
-            destination = flight_event["destination"]
-            try:
-                delay_minutes = int(flight_event["delay_minutes"])
-            except (ValueError, TypeError):
-                raise ValueError(
-                    f"Invalid delay_minutes value: {flight_event['delay_minutes']}"
-                )
+            validated_event = validate_event(
+                flight_event
+            )
+
+            flight_number = validated_event["flight_number"]
+            origin = validated_event["origin"]
+            destination = validated_event["destination"]
+            delay_minutes = validated_event["delay_minutes"]
 
             print(
                 json.dumps(
                     {
+                        "event": "flight_event_received",
                         "flight_number": flight_number,
                         "delay_minutes": delay_minutes
                     }
@@ -49,9 +61,26 @@ Delay: {delay_minutes} minutes
 """
                 )
 
-            else:
                 print(
-                    f"Flight {flight_number} delay of {delay_minutes} minutes does not require notification"
+                    json.dumps(
+                        {
+                            "event": "notification_sent",
+                            "flight_number": flight_number,
+                            "delay_minutes": delay_minutes
+                        }
+                    )
+                )
+
+            else:
+
+                print(
+                    json.dumps(
+                        {
+                            "event": "notification_not_required",
+                            "flight_number": flight_number,
+                            "delay_minutes": delay_minutes
+                        }
+                    )
                 )
 
         except Exception as e:
@@ -59,7 +88,9 @@ Delay: {delay_minutes} minutes
             print(
                 json.dumps(
                     {
-                        "error": str(e)
+                        "event": "validation_or_processing_failed",
+                        "error": str(e),
+                        "message_body": record["body"]
                     }
                 )
             )
@@ -67,5 +98,6 @@ Delay: {delay_minutes} minutes
             raise
 
     return {
-        "statusCode": 200
+        "statusCode": 200,
+        "body": json.dumps("Success")
     }
