@@ -1,6 +1,7 @@
 import json
 import boto3
 import os
+from validator import validate_event
 
 sns = boto3.client("sns")
 
