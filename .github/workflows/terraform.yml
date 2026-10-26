@@ -40,11 +40,11 @@ jobs:
           echo "Repository: $GITHUB_REPOSITORY"
           echo "Event: $GITHUB_EVENT_NAME"
 
-      # Debugging OIDC Variables for troubleshooting, can be commented out when not needed
-      - name: Check OIDC Variables
-        run: |
-          echo "ACTIONS_ID_TOKEN_REQUEST_URL=${ACTIONS_ID_TOKEN_REQUEST_URL}"
-          echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN exists=$([ -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ] && echo yes || echo no)"
+      # # Debugging OIDC Variables for troubleshooting, can be commented out when not needed
+      # - name: Check OIDC Variables
+      #   run: |
+      #     echo "ACTIONS_ID_TOKEN_REQUEST_URL=${ACTIONS_ID_TOKEN_REQUEST_URL}"
+      #     echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN exists=$([ -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ] && echo yes || echo no)"
 
       # could not get to work, will come back to later
       # - name: Configure AWS Credentials
